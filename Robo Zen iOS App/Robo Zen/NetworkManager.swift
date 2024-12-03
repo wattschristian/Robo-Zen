@@ -1,47 +1,54 @@
-// In NetworkManager.swift
-func sendCoordinates(_ coordinates: [CoordinateEntry], completion: @escaping (Result<Void, Error>) -> Void) {
-    guard let url = URL(string: "\(baseURL)/receive-coordinates") else {
-        completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+import Foundation
+
+
+// Extension to make CGPoint Codable
+extension CGPoint: Codable {}
+
+func sendDrawingToServer(drawing: Drawing) {
+    // Replace with your Raspberry Pi's IP address and port
+    guard let url = URL(string: "http://10.7.83.129:8080/api/data") else {
+        print("Invalid URL")
         return
     }
     
+    // Create the URLRequest
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     
+    // Convert Drawing to JSON
+    let encoder = JSONEncoder()
     do {
-        let jsonData = try JSONEncoder().encode(coordinates)
+        let jsonData = try encoder.encode(drawing)
         
+        // Create URL session task
         let task = URLSession.shared.uploadTask(with: request, from: jsonData) { data, response, error in
+            // Handle the response
             if let error = error {
-                completion(.failure(error))
+                print("Error: \(error.localizedDescription)")
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                completion(.failure(NSError(domain: "Invalid Response", code: 0, userInfo: nil)))
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No HTTP response")
                 return
             }
             
-            completion(.success(()))
+            print("Status code: \(httpResponse.statusCode)")
+            
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Response: \(responseString)")
+            }
         }
         
+        // Start the network request
         task.resume()
+        
     } catch {
-        completion(.failure(error))
+        print("Failed to encode drawing: \(error)")
     }
 }
 
-// Add this struct to the file or in a separate file
-struct CoordinateEntry: Codable {
-    let x: Double
-    let y: Double
-    let timestamp: String?
-    
-    init(x: Double, y: Double, timestamp: String? = nil) {
-        self.x = x
-        self.y = y
-        self.timestamp = timestamp ?? ISO8601DateFormatter().string(from: Date())
-    }
-}
+
+
+
