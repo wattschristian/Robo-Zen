@@ -13,7 +13,9 @@ struct Drawing: Encodable {
     let id: Int
     let name: String
     let points: [[CGPoint]]
+    
 }
+
 extension Drawing {
     func transformDrawing(xSubtract: CGFloat, ySubtract: CGFloat) -> Drawing {
         let transformedPoints = points.map { pointGroup in
@@ -215,7 +217,11 @@ class RoboZenDrawingViewController: UIViewController {
 
             let drawingData = self.drawingView.getDrawingData()
             let newDrawing = Drawing(id: idCount+1, name: nameDescriptor, points: drawingData)
-            globalDrawings.append(newDrawing)
+            print(newDrawing.points)
+            let transformedNewDrawing = newDrawing.transformDrawing(xSubtract: 150, ySubtract: 150)
+            print(transformedNewDrawing.points)
+            
+            globalDrawings.append(transformedNewDrawing)
 
             let successAlert = UIAlertController(title: "Success", message: "Drawing successfully saved! You can find it in the View Designs section on the home screen.", preferredStyle: .alert)
             successAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
