@@ -5,7 +5,6 @@ import Foundation
 extension CGPoint: Codable {}
 
 func sendDrawingToServer(drawing: Drawing) {
-    // Replace with your Raspberry Pi's IP address and port
     guard let url = URL(string: "http://10.7.83.129:8080/api/data") else {
         print("Invalid URL")
         return
