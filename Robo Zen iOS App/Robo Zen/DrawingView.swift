@@ -14,7 +14,21 @@ struct Drawing: Encodable {
     let name: String
     let points: [[CGPoint]]
 }
-
+extension Drawing {
+    func transformDrawing(xSubtract: CGFloat, ySubtract: CGFloat) -> Drawing {
+        let transformedPoints = points.map { pointGroup in
+            pointGroup.map { point in
+                CGPoint(x: point.x - xSubtract, y: point.y - ySubtract)
+            }
+        }
+        
+        return Drawing(
+            id: self.id,
+            name: self.name,
+            points: transformedPoints
+        )
+    }
+}
 var idCount = 0
 var globalDrawings: [Drawing] = []
 var isDrawingAllowed = true
