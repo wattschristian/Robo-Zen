@@ -9,7 +9,7 @@
 import UIKit
 
 
-struct Drawing {
+struct Drawing: Encodable {
     let id: Int
     let name: String
     let points: [[CGPoint]]
